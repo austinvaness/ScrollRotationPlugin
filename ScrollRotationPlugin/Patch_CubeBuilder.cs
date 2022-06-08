@@ -2,6 +2,7 @@
 using Sandbox.Definitions;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
+using Sandbox.ModAPI;
 using System;
 using System.Reflection;
 using VRage.Game;
@@ -26,14 +27,18 @@ namespace avaness.ScrollRotationPlugin
             {
                 MethodInfo method = typeof(MyCubeBuilder).GetMethod("RotateAxis", BindingFlags.NonPublic | BindingFlags.Instance);
                 if (method == null)
+                {
+                    Main.Log("Error: Unable to find RotateAxis");
                     return false;
+                }
 
                 rotateAxis = (Action<MyCubeBuilder, int, int, double, bool>)Delegate.CreateDelegate(
                     typeof(Action<MyCubeBuilder, int, int, double, bool>),
                     method);
             }
-            catch
+            catch (Exception e)
             {
+                Main.Log("Error: " + e);
                 return false;
             }
 
@@ -50,8 +55,8 @@ namespace avaness.ScrollRotationPlugin
                 int scroll = input.DeltaMouseScrollWheelValue();
                 if (scroll != 0)
                 {
-                    bool newlyPressed = scroll != prevScroll;
                     int rotateSign = Math.Sign(scroll);
+                    bool newlyPressed = prevScroll == 0 || Math.Sign(prevScroll) != rotateSign;
                     double angleDelta = frameDt * BLOCK_ROTATION_SPEED;
 
                     if (Main.Settings.AxisControl)
@@ -62,7 +67,7 @@ namespace avaness.ScrollRotationPlugin
                             if (___m_alignToDefault)
                                 ___m_customRotation = true;
 
-                            rotateAxis(__instance, ___m_selectedAxis, rotateSign, angleDelta, newlyPressed);
+                            rotateAxis(__instance, ___m_selectedAxis, rotateSign, angleDelta, true);
                         }
                         else if (input.IsAnyAltKeyPressed())
                         {
@@ -86,13 +91,13 @@ namespace avaness.ScrollRotationPlugin
                                 ___m_selectedAxis = 2;
                             else
                                 ___m_selectedAxis = 0;
-                            rotateAxis(__instance, ___m_selectedAxis, rotateSign, angleDelta, newlyPressed);
+                            rotateAxis(__instance, ___m_selectedAxis, rotateSign, angleDelta, true);
 
                         }
                         else if (input.IsAnyAltKeyPressed())
                         {
                             ___m_selectedAxis = 1;
-                            rotateAxis(__instance, ___m_selectedAxis, rotateSign, angleDelta, newlyPressed);
+                            rotateAxis(__instance, ___m_selectedAxis, rotateSign, angleDelta, true);
                         }
                     }
                 }
