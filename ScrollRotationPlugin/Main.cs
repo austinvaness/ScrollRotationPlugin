@@ -17,11 +17,15 @@ namespace avaness.ScrollRotationPlugin
 
         public void Init(object gameInstance)
         {
-            if(Patch_CubeBuilder.Init())
+            if(Patch_CubeBuilder.Init() && Patch_ClipboardComponent.Init())
             {
                 Settings = Config.Load();
                 Harmony harmony = new Harmony("avaness.ScrollRotationPlugin");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
+            }
+            else
+            {
+                Log("Failed to load plugin.");
             }
         }
 
