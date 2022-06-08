@@ -26,9 +26,9 @@ namespace avaness.ScrollRotationPlugin
                 string path = Path.Combine(MyFileSystem.UserDataPath, "Storage", FileName);
                 XmlSerializer xmlSerializer = new XmlSerializer(typeof(Config));
 
-                using (FileStream input = File.OpenWrite(path))
+                using (StreamWriter output = File.CreateText(path))
                 {
-                    xmlSerializer.Serialize(input, this);
+                    xmlSerializer.Serialize(output, this);
                     Main.Log("Config saved.");
                 }
             }
