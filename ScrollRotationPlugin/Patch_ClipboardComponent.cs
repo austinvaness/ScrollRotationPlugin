@@ -15,8 +15,6 @@ namespace avaness.ScrollRotationPlugin
         // void DrawRotationAxis(int axis)
         private static Action<MyClipboardComponent, int> drawRotationAxis;
 
-        private static int prevScroll = 0;
-
         public static bool Init()
         {
             try
@@ -24,7 +22,7 @@ namespace avaness.ScrollRotationPlugin
                 MethodInfo method = typeof(MyClipboardComponent).GetMethod("RotateAxis", BindingFlags.NonPublic | BindingFlags.Instance);
                 if (method == null)
                 {
-                    Main.Log("Error: Unable to find RotateAxis");
+                    Main.Log("Error: Unable to find RotateAxis in MyClipboardComponent");
                     return false;
                 }
                 rotateAxis = (Action<MyClipboardComponent, int, int, bool, int>)Delegate.CreateDelegate(
@@ -34,7 +32,7 @@ namespace avaness.ScrollRotationPlugin
                 MethodInfo method2 = typeof(MyClipboardComponent).GetMethod("DrawRotationAxis", BindingFlags.NonPublic | BindingFlags.Instance);
                 if (method2 == null)
                 {
-                    Main.Log("Error: Unable to find DrawRotationAxis");
+                    Main.Log("Error: Unable to find DrawRotationAxis in MyClipboardComponent");
                     return false;
                 }
                 drawRotationAxis = (Action<MyClipboardComponent, int>)Delegate.CreateDelegate(
@@ -64,54 +62,13 @@ namespace avaness.ScrollRotationPlugin
             {
                 int frameDt = MySandboxGame.TotalGamePlayTimeInMilliseconds - ___m_lastInputHandleTime;
 
-                IMyInput input = MyInput.Static;
-                int scroll = input.DeltaMouseScrollWheelValue();
-                if (scroll != 0)
-                {
-                    int rotateSign = Math.Sign(scroll);
-                    bool newlyPressed = prevScroll == 0 || Math.Sign(prevScroll) != rotateSign;
-
-                    if (Main.Settings.AxisControl)
-                    {
-                        // Inputs where Shift = rotate and Alt = change axis
-                        if (input.IsAnyShiftKeyPressed())
-                        {
-                            rotateAxis(__instance, ___m_currentGamepadRotationAxis, rotateSign, true, frameDt);
-                        }
-                        else if (input.IsAnyAltKeyPressed())
-                        {
-                            if (newlyPressed)
-                            {
-                                ___m_currentGamepadRotationAxis = (___m_currentGamepadRotationAxis + Math.Sign(scroll)) % 3;
-                                if (___m_currentGamepadRotationAxis < 0)
-                                    ___m_currentGamepadRotationAxis = 2;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // Inputs where Shift = axis 0, Alt = axis 1, Shift+Alt = axis 2
-                        if (input.IsAnyShiftKeyPressed())
-                        {
-                            if (input.IsAnyAltKeyPressed())
-                                ___m_currentGamepadRotationAxis = 2;
-                            else
-                                ___m_currentGamepadRotationAxis = 0;
-                            rotateAxis(__instance, ___m_currentGamepadRotationAxis, rotateSign, true, frameDt);
-
-                        }
-                        else if (input.IsAnyAltKeyPressed())
-                        {
-                            ___m_currentGamepadRotationAxis = 1;
-                            rotateAxis(__instance, ___m_currentGamepadRotationAxis, rotateSign, true, frameDt);
-                        }
-                    }
-                }
-                prevScroll = scroll;
+                int rotation = RotationInput.HandleInput(ref ___m_currentGamepadRotationAxis);
+                if(rotation != 0)
+                    rotateAxis(__instance, ___m_currentGamepadRotationAxis, rotation, true, frameDt);
             }
             else
             {
-                prevScroll = 0;
+                RotationInput.ClearInput();
             }
 
         }
