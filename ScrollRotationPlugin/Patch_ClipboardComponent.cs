@@ -3,7 +3,10 @@ using Sandbox;
 using Sandbox.Game.SessionComponents.Clipboard;
 using System;
 using System.Reflection;
+using VRage.Game;
 using VRage.Input;
+using VRageMath;
+using VRageRender;
 
 namespace avaness.ScrollRotationPlugin
 {
@@ -71,6 +74,20 @@ namespace avaness.ScrollRotationPlugin
                 RotationInput.ClearInput();
             }
 
+        }
+
+        [HarmonyPatch("DrawRotationAxis")]
+        public static void Prefix(MyClipboardComponent __instance, int axis)
+        {
+            Sandbox.Game.Entities.Cube.MyGridClipboard m_clipboard = __instance.Clipboard;
+            if (m_clipboard.IsActive)
+            {
+                Matrix worldMatrix = m_clipboard.GetFirstGridOrientationMatrix();
+                Vector3D pastePosition = m_clipboard.PastePosition;
+                double offset = m_clipboard.GetGridHalfExtent(axis) + 1;
+
+                Main.DrawArrows(worldMatrix, pastePosition, axis, offset, 0, 1);
+            }
         }
     }
 }
