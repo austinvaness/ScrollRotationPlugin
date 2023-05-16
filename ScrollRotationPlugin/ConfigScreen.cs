@@ -64,14 +64,23 @@ namespace avaness.ScrollRotationPlugin
             Vector2 pos = caption.Position;
             pos.Y += (caption.Size.Y / 2) + 0.04f;
 
-            MyGuiControlCheckbox checkbox = new MyGuiControlCheckbox(pos, isChecked: config.AxisControl,
+            MyGuiControlCheckbox modeCheckbox = new MyGuiControlCheckbox(pos, isChecked: config.AxisControl,
                 originAlign: MyGuiDrawAlignEnum.HORISONTAL_LEFT_AND_VERTICAL_TOP,
                 toolTip: "When checked, Shift will rotate and Alt will change the axis."
                 );
-            checkbox.IsCheckedChanged += CheckedChanged;
-            Controls.Add(checkbox);
-            AddCaption(checkbox, "Control Axis Mode");
-            pos.Y += checkbox.Size.Y + space;
+            modeCheckbox.IsCheckedChanged += CheckedChanged;
+            Controls.Add(modeCheckbox);
+            AddCaption(modeCheckbox, "Control Axis Mode");
+            pos.Y += modeCheckbox.Size.Y + space;
+
+            MyGuiControlCheckbox hintsCheckbox = new MyGuiControlCheckbox(pos, isChecked: config.RotationHints,
+                originAlign: MyGuiDrawAlignEnum.HORISONTAL_LEFT_AND_VERTICAL_TOP,
+                toolTip: "When checked, arrows will indicate direction of upwards scroll."
+                );
+            hintsCheckbox.IsCheckedChanged += RotationHintsChanged;
+            Controls.Add(hintsCheckbox);
+            AddCaption(hintsCheckbox, "Rotation Hints");
+            pos.Y += hintsCheckbox.Size.Y + space;
 
             CloseButtonEnabled = true;
 
@@ -80,9 +89,14 @@ namespace avaness.ScrollRotationPlugin
 
         }
 
+        private void RotationHintsChanged(MyGuiControlCheckbox checkbox)
+        {
+            config.RotationHints = checkbox.IsChecked;
+        }
+
         private void CheckedChanged(MyGuiControlCheckbox checkbox)
         {
-            config.AxisControl = !config.AxisControl;
+            config.AxisControl = checkbox.IsChecked;
         }
 
         private void AddCaption(MyGuiControlBase control, string caption)

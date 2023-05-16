@@ -49,6 +49,9 @@ namespace avaness.ScrollRotationPlugin
         [HarmonyPatch("DrawRotationAxis")]
         public static void Prefix(MyCubeBuilder __instance, int axis, MyCubeBuilderGizmo ___m_gizmo, int ___ROTATION_AXIS_VISIBILITY_MODIFIER)
         {
+            if (!Main.Settings.RotationHints)
+                return;
+
             MatrixD worldMatrix = ___m_gizmo.SpaceDefault.m_worldMatrixAdd;
 
             float arrowSize;

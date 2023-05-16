@@ -79,6 +79,9 @@ namespace avaness.ScrollRotationPlugin
         [HarmonyPatch("DrawRotationAxis")]
         public static void Prefix(MyClipboardComponent __instance, int axis)
         {
+            if (!Main.Settings.RotationHints)
+                return;
+
             Sandbox.Game.Entities.Cube.MyGridClipboard m_clipboard = __instance.Clipboard;
             if (m_clipboard.IsActive)
             {

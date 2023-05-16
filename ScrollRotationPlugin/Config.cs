@@ -19,6 +19,8 @@ namespace avaness.ScrollRotationPlugin
         /// </summary>
         public bool AxisControl { get; set; } = false;
 
+        public bool RotationHints { get; set; } = true;
+
         public void Save()
         {
             try
